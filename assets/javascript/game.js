@@ -1,30 +1,63 @@
-//setting the variables that I will be using to maintain the score board
-var randomResult;
-var lost;
-var win;
+var scoreTarget = 0;
+var scoreTally = 0;
 
-$(".soccerBall").attr('class');
+var numberOfGems = 4;
+var assignedGemValue = [];
+var gems = ["assets/images/gem-0.png", "assets/images/gem-1.png", "assets/images/gem-2.png", "assets/images/gem-3.png"];
 
-randomResult = Math.floor(Math.random() * 69) + 30;
+var wins = 0;
+var losses = 0;
 
-$("#result").html('Random Result: ' + randomResult);
+var main = $("body");
 
-//For loop 
-for(var i=0; i < 4; i++) {
+$(document).ready(function () {
 
-    var random = Math.floor(Math.random() * 11) + 1;
-    //console.log(random);
-    
-    var soccerBall =$("<div>");
-    soccerBall.attr({
-    "class":'soccerBall',
-    "dataRandom":random,
+    resetGame();
+
+    $(".points").click(function () {
+        var currentGemValue = ($(this).attr("scoreTally-value"));
+        console.log("clicked " + currentGemValue);
+
+        currentGemValue = parseInt(currentGemValue);
+        scoreTally += currentGemValue;
+        console.log("current score: " + scoreTally);
+        $("#progressToTarget").text("Your total score is: " + scoreTally);
+        // W/L logic
+        if (scoreTally === scoreTarget) {
+            wins++;
+            $("#gameWins").text("Wins: " + wins);
+            resetGame();
+        } else if (scoreTally >= scoreTarget) {
+            losses++;
+            $("#gameLosses").text("Losses: " + losses);
+            resetGame();
+        }
     });
-    $(".soccerBalls").append(soccerBall);
-}
 
-$(".soccerBall").on('click', function () {
-    console.log($(this));
 });
-// creating a game of choice with four balls
-// you need to add up to a given amount by clicking each ball
+
+function resetGame() {
+    // regenerate targetNumber
+    scoreTarget = Math.floor((Math.random() * 120) + 19)
+    $("#targetNumber").text("Target: " + scoreTarget);
+    console.log("scoreTarget: " + scoreTarget);
+    // reset scoreTally
+    scoreTally = 0;
+    $("#progressToTarget").text("Your total score is: " + scoreTally);
+    console.log("scoreTally: " + scoreTally);
+    // reset gem images
+    $("#gem-images").empty();
+    var img = main.find("#gem-images");
+
+    for (i = 0; i < gems.length; i++) {
+        // create the point values for the gem images
+        assignedGemValue[i] = Math.floor((Math.random() * 12) + 1);
+
+        var gemImg = $("<img>");
+        gemImg.addClass("col-3 points");
+        gemImg.attr("src", gems[i]);
+        gemImg.attr("scoreTally-value",assignedGemValue[i]);
+        img.append(gemImg);
+    }
+    console.log("assignedGemValue: " + assignedGemValue)
+}
