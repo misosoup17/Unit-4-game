@@ -1,100 +1,29 @@
 body {
-	font-family: 'Share Tech Mono', monospace;
-	color: white;
-
-
+  font-family: 'Merriweather', serif;
+  color: white;
+  background-image: url("../images/wizard_lair.jpg")
 }
 
-.modal-body {
-	color: black;
+h1 {
+
+  text-align: center;
+  font-size: 5rem;
 }
-
-.modal-header {
-	color: black;
+h3 {
+  font-size: 2rem;
 }
-
-#wrap {
-    min-height: 100%;
-    height: auto !important;
-    height: 100%;
-    margin: 0 auto -60px;
-
- }
-
-
- #push, #footer {
-    height: 60px;
+p {
+  margin: 5px;
+  font-size: 1rem;
 }
-
-
-/*Classes*/
-.center-block {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+#instructions{
+  padding: 1rem;
+  text-align: center;
+  background: grey;
 }
-
-
-.characterContainer {
-	display: inline-block;
-	width: 200px;
-	border: solid 4px black;
-	margin-bottom: 10px;
-	margin-right: 10px;
-	border-radius: 7px;
-	
+#crystals{
+  position: relative;
 }
-
-.bg-red {
-	background-color: #ce2121;
-
-	
+#target{
+  font-size: 2.5rem;
 }
-
-.bg-white {
-	background-color: white;
-
-}
-
-.bg-black {
-	background-color: grey;
-
-}
-
-.enemyContainer {
-	display: inline-block;
-	
-	width: 200px;
-	border: solid 4px black;
-	margin-bottom: 10px;
-	background-color: black;
-	border-radius: 7px;
-}
-
-
-.characterContainer p, .enemyContainer p {
-	color: black;
-	text-align: center;
-
-}
-
-img {
-	height: 100px;
-	width: 150px;
-	display: block;
-    margin-left: auto;
-    margin-right: auto;
-
-}
-
-.attackBtn {
-	vertical-align: middle;
-	margin-top: 80px;
-	
-}
-
-#attackText {
-	font-size: 25px;
-}
-
-

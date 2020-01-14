@@ -1,434 +1,114 @@
-function reset() {
-  window.gameObj = {
-    // intializing the attack button to false. will set it to true later on
-    attackOccurred: false,
-    winOccurred: false,
-    lossOccurred: false,
-    wounded: false,
-    gameOver: false,
-    jediMaster: false,
-    characterArrayList: [
-      // 1.  An array or object of possible characters properties would include 
-      // name, picture, Health Points, Attack Power and counter attack power
+$(document).ready(function() {
 
-      {
-        name: 'Luke SkyWalker',
-        visual: 'assets/images/Luke2_683758.0.jpg',
-        healthPoints: 160,
-        attackPower: 10,
-        counterAttackPower: 20,
-      },
-      {
-        name: 'Yoda',
-        visual: 'assets/images/yoda_new_topps.jpg',
-        healthPoints: 130,
-        attackPower: 15,
-        counterAttackPower: 30,
-      },
-      {
-        name: 'Less Ray',
-        visual: 'assets/images/rey-from-star-wars-force-awakens.jpg',
-        healthPoints: 180,
-        attackPower: 9,
-        counterAttackPower: 15,
-      },
-      {
-        name: 'Darth Vader',
-        visual: 'assets/images/darth-freakin-vader.jpg',
-        healthPoints: 180,
-        attackPower: 15,
-        counterAttackPower: 25,
-      },
-      {
-        name: 'Kylo Wren',
-        visual: 'assets/images/kylo-ren-db-main_e2e6f666.jpeg',
-        healthPoints: 110,
-        attackPower: 10,
-        counterAttackPower: 20,
-      },
-      {
-        name: 'Darth Maul',
-        visual: 'assets/images/darth_maul_by_xwaxwingx-d5tu9k8.jpg',
-        healthPoints: 100,
-        attackPower: 15,
-        counterAttackPower: 24,
-      }
+	// target array
+	var target = [];
+	for (var t = 19; t < 121; t++) {
+		target.push(t);
+	}
+	// crystal numbers array
+	var crystals = [];
+	for (var c = 1; c < 13; c++) {
 
-    ],
-    // Initializes game start true
-    gameStart: true,
-    // initializes your character to nothing
-    yourCharacter: null,
-    // initializes enemy selection to nothing
-    currentEnemy: null,
-    // initializs your blank array of previously fought enemies. might just remove all together
-    previouslyFought: [],
-    // sets current attack power to null
-    yourCurrentAttackPower: null,
-    winOccurred: false,
+		crystals.push(c);
+	}
 
-    // create an array of battle sounds
-    battleSoundsArray: ['assets/audio/Star-wars-lightsaber-fight-sound-effects.mp3',],
-    characherSelectSound: 'assets/audo/Star-wars-lightsaber-fight-sound-effects.mp3',
+	var target; // number to match
+	var cVals = []; // for array of random crystal values
 
-    // picks at random battle sound when the attack button is pressed
-    battleSoundPick: function () {
-      return this.battleSoundsArray[Math.floor(Math.random() * this.battleSoundsArray.length)];
-    },
+	var c1;
+	var c2;
+	var c3;
+	var c4;
 
-  }
-};
+  var totalPoints = 0; //point total
+	var wins = 0;
+  var losses = 0;
+  
 
+	// pick a target number
+	function pickTarget(arr) {
+		var x = arr[Math.floor(Math.random() * arr.length)];
+		target = x;
+		$("#target").html(target);
+		console.log("Target number: " + target);
 
-// STAGE 1: Initial Setup/ Display
-$(document).ready(function () {
-  reset();
-  // gets the link for the theme song to be played in the background
-  var audioElement = document.createElement('audio');
-  audioElement.autoplay = true;
-  audioElement.loop = true;
-  audioElement.setAttribute('src', 'assets/audio/');
+	} // END of pickTarget function
 
-  // displays modal
-  $('#myModal').modal('show');
+	// pick crystal values
 
-  function render() {
-    // setting variables set to id tags with html elements for easy reference later
-    // using the $ before variables indicates that they are jQuery objects
-    var $charList = $('#characterList');
-    var $enemyList = $('#enemyList');
-    var $yourCharacter = $('#yourCharacter');
-    var $attackText = $('#attackText');
-    var $yourEnemy = $('#yourEnemy');
-    var $winText = $('#attackText');
-    var $lossText = $('#attackText');
-    // var $wounded = $('#attackText');
-    var $gameOver = $('#gameOver');
-    var $jediText = $('#attackText');
+	function pickCrystal(arr) {
+		for (var y = 0; y < 4; y++){
+			var a = arr[Math.floor(Math.random() * arr.length)];
+			cVals.push(a);
+		}
+    // check which numbers have been picked
+		console.log("crystal numbers: " + cVals);
 
-    // using underscore.js to create templates that are dynamically updated
-    var $charTemplate = _.template($('#characterTmpl').html());
-    var $attackTemplate = _.template($('#attackTmpl').html());
-    var $winTemplate = _.template($('#winTmpl').html());
-    var $lossTemplate = _.template($('#lossTmpl').html());
-    var $jediTemplate = _.template($('#jediTmpl').html());
-    // var $woundTemplate = 
+	} // END of pickCrystal function
 
-    // Haven't selected Character
-    var charHtml = "";
-    $yourCharacter.html("");
-    $yourEnemy.html("");
-    $attackText.html("");
-    $gameOver.html("");
+	function crystalValues(arr) {
+		// change value of each crystal button according to array
+		for (i = 0; i < arr.length; i++) {
+		$("#button-" + (i+1)).attr("value", arr[i]);
+		console.log(this);
+		}
+		c1 = arr[0];
+		c2 = arr[1];
+		c3 = arr[2];
+		c4 = arr[3];
+	} // END of crystalValues function
 
-    // using a ternary operator to give true or false to the background color choice
-    var listBg = gameObj.yourCharacter ? "bg-black" : "bg-white";
-    // Sets the initial screen with characters to select from
-    gameObj.characterArrayList.forEach(function (character, index) {
-      charHtml = charHtml + $charTemplate({ index: index, background: listBg, character: character });
-    });
-    if (gameObj.yourCharacter) {
-      $yourCharacter.html($charTemplate({ index: 0, background: 'bg-white', character: gameObj.yourCharacter }));
-      // re-write in jQuery
-      $enemyList.html(charHtml);
-      $charList.html("");
+	function gameReset(x) {
+		cVals = []; // clears crystal number values
+		pickTarget(target);
+		pickCrystal(crystals);
+		crystalValues(cVals);
+		totalPoints = 0;
+    $("#points").html(totalPoints);
+    
+		alert(x);
+	} // END of gameReset function
+  
 
-    } else {
-      $charList.html(charHtml);
-      $enemyList.html("");
-    }
-    if (gameObj.currentEnemy) {
-      $yourEnemy.html($charTemplate({ index: 0, background: 'bg-red', character: gameObj.currentEnemy }));
-    }
-    if (gameObj.attackOccurred) {
-      $attackText.html($attackTemplate({ gameObj: gameObj }));
-    }
-    // added
-    if (gameObj.winOccurred) {
+	pickTarget(target); // target number to match
+	pickCrystal(crystals); // crystal array
+	crystalValues(cVals);
 
-      // Displays the win text 
-      $winText.html($winTemplate({ lastOpponent: gameObj.lastOpponent }));
-      // Removes the enemy character after you win.
-      $('#yourEnemy').empty(gameObj.currentEnemy);
-    }
+		// crystal button functions
+		$("#button-1").on("click", function() {
+			totalPoints += c1;
+			$("#points").html(totalPoints);
+		});
+		$("#button-2").on("click", function() {
+			totalPoints += c2;
+			$("#points").html(totalPoints);
+		});
+		$("#button-3").on("click", function() {
+			totalPoints += c3;
+			$("#points").html(totalPoints);
+		});
+		$("#button-4").on("click", function() {
+			totalPoints += c4;
+			$("#points").html(totalPoints);
+		});
+	$("button").on("click", function() {
+		// adds to win total
+		if (totalPoints == target) {
+			wins++;
+			console.log(totalPoints);
+			$("#points").html(totalPoints);
+			$("#wins").html("Wins: " + wins);
 
-    if (gameObj.lossOccurred) {
-      // Displays loss text
-      $lossText.html($lossTemplate({ gameObj: gameObj }));
-    }
-    // This runs when the enemy is wounded (hp less than zero)
-    if (gameObj.wounded) {
-      $('#attackText').html("You are seriously wounded. GAME OVER!");
-    }
-    // This runs if the user losses
-    if (gameObj.gameOver) {
-      // creates the reset button to start the game over
-      var b = $('<button>');
-      b.addClass('btn-primary waves-effect waves-light btn-lg');
-      b.html('Battle Again!');
-      reset();
+			setTimeout(function() {gameReset("What magic do you possess???")},0);
+		}
+		else if (totalPoints > target){
 
-      b.click(render);
-      $('#gameOver').append(b);
+			losses++;
+			$("#points").html(totalPoints);
+			$("#losses").html("Losses: " + losses);
 
-    }
-    if (gameObj.jediMaster) {
-      // Displays final text 
-      $jediText.html($jediTemplate({ lastOpponent: gameObj.lastOpponent }));
-      $('#yourEnemy').empty(gameObj.currentEnemy);
-      // creates the reset button to start the game over
-      var b = $('<button>');
-      b.addClass('btn-primary waves-effect waves-light btn-lg');
-      b.html('Battle Again!');
-      reset();
+			setTimeout(function() {gameReset("You do not have the strength...")},0);
+		}
+	});
 
-      b.click(render);
-      $('#gameOver').append(b);
-
-    }
-
-  }
-
-  //STAGE 2: Selecting your character 
-  $('#characterList').on('click', '.characterContainer', function (e) {
-    // pause current audio to allow for battle sounds
-    audioElement.pause();
-    // TODO: set the AUDIO to saberon.mp3
-
-    // references the characterList
-    var element = $(this);
-    var charIndex = element.data('character-index');
-    // your character was initially set as null so when your character != null this if runs
-    if (!gameObj.yourCharacter) {
-      // pushes your object selection into yourCharacter array
-      gameObj.yourCharacter = gameObj.characterArrayList.splice(charIndex, 1)[0];
-      // setting initial attack power to the value within the master object
-      gameObj.yourCurrentAttackPower = gameObj.yourCharacter.attackPower;
-    }
-    // This renders and updates all of the html elements 
-    render();
-    // adds a sound to selecting character
-    var $audioCharacter = document.createElement('audio');
-    $audioCharacter.setAttribute('src', gameObj.characherSelectSound);
-    $audioCharacter.play();
-  });
-
-  // STAGE 3: select your enemy
-  $('#enemyList').on('click', '.characterContainer', function (e) {
-    var element = $(this);
-    var charIndex = element.data('character-index');
-    // current enemy was initially set as null so when your enemy != this if runs 
-    if (!gameObj.currentEnemy) {
-      // creates an array that houses the enemy character
-      gameObj.winOccurred = false;
-      // sets the attack button to false ensuring the attack text is not displayed when selecting a new character and only after 
-      // ...click attack
-      gameObj.attackOccurred = false;
-      gameObj.currentEnemy = gameObj.characterArrayList.splice(charIndex, 1)[0];
-    }
-    // This renders and updates all of the html elements 
-    render();
-    // adds a sound to selecting character
-    var $audioCharacter = document.createElement('audio');
-    $audioCharacter.setAttribute('src', gameObj.characherSelectSound);
-    $audioCharacter.play();
-  });
-
-  // STAGE 4: GAME PLAY. Click on ATTACK
-
-  $('#attackBtn').on('click', function (e) {
-    // this ensure you cannot click any other characters again
-    if (!gameObj.yourCharacter || !gameObj.currentEnemy) {
-      $('#attackText').html('No enemy here, select an emeny to fight.')
-      return;
-    }
-
-    gameObj.attackOccurred = true;
-
-    // declaring new variables
-    var yourCharacter = gameObj.yourCharacter;
-    var currentEnemy = gameObj.currentEnemy;
-    //increment yourAttackPower by yourCharacter.attackPower
-    gameObj.yourCurrentAttackPower = gameObj.yourCurrentAttackPower + yourCharacter.attackPower;
-    //decrease enemy health points by yourAttackPower state
-    currentEnemy.healthPoints = currentEnemy.healthPoints - gameObj.yourCurrentAttackPower;
-    //decrease your health points by enemy's counterAttackPower
-    yourCharacter.healthPoints = yourCharacter.healthPoints - currentEnemy.counterAttackPower;
-    console.log("enenemy health points: " + currentEnemy.healthPoints + ' your health: ' + yourCharacter.healthPoints);
-
-    var $audioBattle = document.createElement('audio');
-    $audioBattle.setAttribute('src', gameObj.battleSoundPick());
-    $audioBattle.play();
-
-    // Win scenario
-    // set win variable  and loss in order to consolidate win ifs. 
-    var win = (currentEnemy.healthPoints < 1 && yourCharacter.healthPoints > 1 ||
-      ((yourCharacter.healthPoints < 1 && currentEnemy.healthPoints < 1) &&
-        (yourCharacter.healthPoints > currentEnemy.healthPoints))
-    ) ? true : false;
-
-    var loss = (yourCharacter.healthPoints < 1 && currentEnemy.healthPoints > 1 ||
-      ((yourCharacter.healthPoints < 1 && currentEnemy.healthPoints < 1) &&
-        (yourCharacter.healthPoints < currentEnemy.healthPoints))
-    ) ? true : false;
-
-    // First if is only if user has defeated all of the enemies    	
-    if (win) {
-
-      console.log('healthPoints of enemy should be equal great than or eqaul to 0: ' + currentEnemy.healthPoints);
-      if (gameObj.characterArrayList.length > 0) {
-        console.log(gameObj.characterArrayList.length);
-        gameObj.winOccurred = true;
-
-        // need to be able to select another enemy
-        gameObj.lastOpponent = gameObj.currentEnemy;
-        gameObj.currentEnemy = null;
-        // need to figure out how to show another error when your character points are less 0. Show error "you are seriously wounded. GAME OVER"
-        // if (yourCharacter.healthPoints =< 0) {
-        // 	gameObj.wounded = true;
-        // 	// gameObj.winOccurred = false;
-
-        // }
-
-      }
-      // scenario when you have defeated all characters
-      else if (gameObj.characterArrayList.length == 0) {
-
-        console.log('Final Jedi Portion ' + gameObj.characterArrayList.length);
-        gameObj.lastOpponent = gameObj.currentEnemy;
-        gameObj.attackOccurred = false;
-        gameObj.jediMaster = true;
-
-      }
-
-
-    }
-    // Loss Scenario
-
-    else if (loss) {
-      gameObj.lossOccurred = true;
-      console.log('Entered the loss occurred section');
-      gameObj.attackOccurred = false;
-      gameObj.gameOver = true;
-
-    }
-    render();
-
-  });
-
-
-
-  render();
-
-});
-(function (a, d, p) {
-  a.fn.backstretch = function (c, b) {
-    (c === p || 0 === c.length) && a.error("No images were supplied for Backstretch");
-    0 === a(d).scrollTop() && d.scrollTo(0, 0);
-    return this.each(function () {
-      var d = a(this),
-        g = d.data("backstretch");
-      if (g) {
-        if ("string" == typeof c && "function" == typeof g[c]) {
-          g[c](b);
-          return
-        }
-        b = a.extend(g.options, b);
-        g.destroy(!0)
-      }
-      g = new q(this, c, b);
-      d.data("backstretch", g)
-    })
-  };
-  a.backstretch = function (c, b) {
-    return a("body").backstretch(c, b).data("backstretch")
-  };
-  a.expr[":"].backstretch = function (c) {
-    return a(c).data("backstretch") !== p
-  };
-  a.fn.backstretch.defaults = { centeredX: !0, centeredY: !0, duration: 5E3, fade: 0 };
-  var r = { left: 0, top: 0, overflow: "hidden", margin: 0, padding: 0, height: "100%", width: "100%", zIndex: -999999 },
-    s = { position: "absolute", display: "none", margin: 0, padding: 0, border: "none", width: "auto", height: "auto", maxHeight: "none", maxWidth: "none", zIndex: -999999 },
-    q = function (c, b, e) {
-      this.options = a.extend({}, a.fn.backstretch.defaults, e || {});
-      this.images = a.isArray(b) ? b : [b];
-      a.each(this.images, function () { a("<img />")[0].src = this });
-      this.isBody = c === document.body;
-      this.$container = a(c);
-      this.$root = this.isBody ? l ? a(d) : a(document) : this.$container;
-      c = this.$container.children(".backstretch").first();
-      this.$wrap = c.length ? c : a('<div class="backstretch"></div>').css(r).appendTo(this.$container);
-      this.isBody || (c = this.$container.css("position"), b = this.$container.css("zIndex"), this.$container.css({ position: "static" === c ? "relative" : c, zIndex: "auto" === b ? 0 : b, background: "none" }), this.$wrap.css({ zIndex: -999998 }));
-      this.$wrap.css({ position: this.isBody && l ? "fixed" : "absolute" });
-      this.index = 0;
-      this.show(this.index);
-      a(d).on("resize.backstretch", a.proxy(this.resize, this)).on("orientationchange.backstretch", a.proxy(function () { this.isBody && 0 === d.pageYOffset && (d.scrollTo(0, 1), this.resize()) }, this))
-    };
-  q.prototype = {
-    resize: function () {
-      try {
-        var a = { left: 0, top: 0 },
-          b = this.isBody ? this.$root.width() : this.$root.innerWidth(),
-          e = b,
-          g = this.isBody ? d.innerHeight ? d.innerHeight : this.$root.height() : this.$root.innerHeight(),
-          j = e / this.$img.data("ratio"),
-          f;
-        j >= g ? (f = (j - g) / 2, this.options.centeredY && (a.top = "-" + f + "px")) : (j = g, e = j * this.$img.data("ratio"), f = (e - b) / 2, this.options.centeredX && (a.left = "-" + f + "px"));
-        this.$wrap.css({ width: b, height: g }).find("img:not(.deleteable)").css({ width: e, height: j }).css(a)
-      } catch (h) { }
-      return this
-    }, show: function (c) {
-      if (!(Math.abs(c) > this.images.length - 1)) {
-        var b = this,
-          e = b.$wrap.find("img").addClass("deleteable"),
-          d = { relatedTarget: b.$container[0] };
-        b.$container.trigger(a.Event("backstretch.before", d), [b, c]);
-        this.index = c;
-        clearInterval(b.interval);
-        b.$img = a("<img />").css(s).bind("load", function (f) {
-          var h = this.width || a(f.target).width();
-          f = this.height || a(f.target).height();
-          a(this).data("ratio", h / f);
-          a(this).fadeIn(b.options.speed || b.options.fade, function () {
-            e.remove();
-            b.paused || b.cycle();
-            a(["after", "show"]).each(function () { b.$container.trigger(a.Event("backstretch." + this, d), [b, c]) })
-          });
-          b.resize()
-        }).appendTo(b.$wrap);
-        b.$img.attr("src", b.images[c]);
-        return b
-      }
-    }, next: function () {
-      return this.show(this.index < this.images.length - 1 ? this.index + 1 : 0)
-    }, prev: function () {
-      return this.show(0 === this.index ? this.images.length - 1 : this.index - 1)
-    }, pause: function () {
-      this.paused = !0;
-      return this
-    }, resume: function () {
-      this.paused = !1;
-      this.next();
-      return this
-    }, cycle: function () {
-      1 < this.images.length && (clearInterval(this.interval), this.interval = setInterval(a.proxy(function () { this.paused || this.next() }, this), this.options.duration));
-      return this
-    }, destroy: function (c) {
-      a(d).off("resize.backstretch orientationchange.backstretch");
-      clearInterval(this.interval);
-      c || this.$wrap.remove();
-      this.$container.removeData("backstretch")
-    }
-  };
-  var l, f = navigator.userAgent,
-    m = navigator.platform,
-    e = f.match(/AppleWebKit\/([0-9]+)/),
-    e = !!e && e[1],
-    h = f.match(/Fennec\/([0-9]+)/),
-    h = !!h && h[1],
-    n = f.match(/Opera Mobi\/([0-9]+)/),
-    t = !!n && n[1],
-    k = f.match(/MSIE ([0-9]+)/),
-    k = !!k && k[1];
-  l = !((-1 < m.indexOf("iPhone") || -1 < m.indexOf("iPad") || -1 < m.indexOf("iPod")) && e && 534 > e || d.operamini && "[object OperaMini]" === {}.toString.call(d.operamini) || n && 7458 > t || -1 < f.indexOf("Android") && e && 533 > e || h && 6 > h || "palmGetResource" in d && e && 534 > e || -1 < f.indexOf("MeeGo") && -1 < f.indexOf("NokiaBrowser/8.5.0") || k && 6 >= k)
-})(jQuery, window);
+}); // end of script
